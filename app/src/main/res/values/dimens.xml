@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="font_usual_size">24sp</dimen>
+    <dimen name="bottom_menu_height">60dp</dimen>
+    <dimen name="av_size">48dp</dimen>
+    <dimen name="usual_margin">16dp</dimen>
+    <dimen name="icon_button_min_size">12dp</dimen>
+</resources>
