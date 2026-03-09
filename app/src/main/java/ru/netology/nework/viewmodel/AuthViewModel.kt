@@ -1,4 +1,5 @@
 package ru.netology.nework.viewmodel
+
 import org.json.JSONObject
 import retrofit2.Response
 import android.net.Uri
@@ -57,13 +58,16 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             val token: Token
             try {
+                android.util.Log.d("AuthViewModel", "Attempting login with login: $login, pass: $pass")
+
                 val response = apiService.login(login, pass)
+
+                android.util.Log.d("AuthViewModel", "Response code: ${response.code()}")
 
                 if (!response.isSuccessful) {
                     _errorMessage.value = parseErrorMessage(response)
                     _dataState.value = 1
 
-                    //throw ApiError(response.code(), response.message())
                 } else {
                     token = response.body() ?: Token(id = 0, token = "")
                     appAuth.setAuth(token.id, token.token, null)
@@ -71,10 +75,8 @@ class AuthViewModel @Inject constructor(
                 }
             } catch (e: IOException) {
                 _dataState.value = 2
-                //throw NetworkError
             } catch (e: Exception) {
                 _dataState.value = 3
-                //throw UnknownError
             }
         }
     }
@@ -98,7 +100,6 @@ class AuthViewModel @Inject constructor(
 
                 if (!response.isSuccessful) {
                     _errorMessage.value = parseErrorMessage(response)
-                    // Оповестить UI об ошибке
                     _dataState.value = 1
                 } else {
                     val token = response.body() ?: Token(id = 0, token = "")
@@ -107,10 +108,8 @@ class AuthViewModel @Inject constructor(
                 }
             } catch (e: IOException) {
                 _dataState.value = 2
-                //throw NetworkError
             } catch (e: Exception) {
                 _dataState.value = 3
-                //throw UnknownError
             }
         }
     }

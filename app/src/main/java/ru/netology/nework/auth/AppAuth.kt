@@ -25,13 +25,17 @@ class AppAuth @Inject constructor(
         val token = prefs.getString(tokenKey, null)
         val name = prefs.getString(nameKey, null)
 
+        android.util.Log.d("AppAuth", "Init - id: $id, token: $token, name: $name")
+
         if (id == 0L || token == null) {
+            android.util.Log.d("AppAuth", "No auth data found, clearing")
             _authStateFlow = MutableStateFlow(AuthState())
             with(prefs.edit()) {
                 clear()
                 apply()
             }
         } else {
+            android.util.Log.d("AppAuth", "Auth data loaded: id=$id, token=$token")
             _authStateFlow = MutableStateFlow(AuthState(id, token, name))
         }
     }
@@ -44,7 +48,7 @@ class AppAuth @Inject constructor(
         with(prefs.edit()) {
             putLong(idKey, id)
             putString(tokenKey, token)
-            putString(nameKey, token)
+            putString(nameKey, name)
             apply()
         }
     }

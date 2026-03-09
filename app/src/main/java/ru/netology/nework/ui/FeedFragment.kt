@@ -2,7 +2,7 @@ package ru.netology.nework.ui
 
 import android.app.AlertDialog
 import android.media.MediaPlayer
-import ru.netology.nework.auxiliary.Companion.Companion.userId
+import ru.netology.nework.util.Companion.Companion.userId
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -24,10 +24,10 @@ import ru.netology.nework.R
 import ru.netology.nework.adapters.OnInteractionListener
 import ru.netology.nework.adapters.PostAdapter
 import ru.netology.nework.auth.AppAuth
-import ru.netology.nework.auxiliary.Companion.Companion.linkArg
-import ru.netology.nework.auxiliary.Companion.Companion.mentionsCountArg
-import ru.netology.nework.auxiliary.Companion.Companion.textArg
-import ru.netology.nework.auxiliary.FloatingValue.currentFragment
+import ru.netology.nework.util.Companion.Companion.linkArg
+import ru.netology.nework.util.Companion.Companion.mentionsCountArg
+import ru.netology.nework.util.Companion.Companion.textArg
+import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.databinding.FragmentFeedBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.Post
@@ -327,7 +327,7 @@ class FeedFragment : Fragment() {
             CoroutineScope(EmptyCoroutineContext).launch {
                 launch {
                     viewModel.viewNewPosts()
-                    delay(25) // без delay прокручивает раньше, не смотря на join
+                    delay(25)
                 }.join()
                 binding.list.smoothScrollToPosition(0)
             }

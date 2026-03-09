@@ -29,25 +29,62 @@ interface ApiService {
     @POST("media")
     suspend fun upload(@Part media: MultipartBody.Part): Response<MediaResponse>
 
-    @FormUrlEncoded
     @POST("users/authentication")
-    suspend fun login(@Field("login") login: String, @Field("password") pass: String): Response<Token>
+    suspend fun login(
+        @Query("login") login: String,
+        @Query("pass") pass: String): Response<Token>
 
-    @FormUrlEncoded
     @POST("users/registration")
     suspend fun register(
-        @Field("login") login: String,
-        @Field("password") pass: String,
-        @Field("name") name: String
-    ): Response<Token>
+        @Query("login") login: String,
+        @Query("pass") pass: String,
+        @Query("name") name: String): Response<Token>
 
     @Multipart
     @POST("users/registration")
     suspend fun registerWithPhoto(
         @Part("login") login: RequestBody,
-        @Part("password") pass: RequestBody,
+        @Part("pass") pass: RequestBody,
         @Part("name") name: RequestBody,
         @Part media: MultipartBody.Part,
     ): Response<Token>
 
+    @GET("users")
+    suspend fun getUsers(): Response<List<UserResponse>>
+
+    @GET("users/{id}")
+    suspend fun getUserById(@Path("id") id: Long): Response<UserResponse>
+
+    @GET("events")
+    suspend fun getAllEvents(): Response<List<EventResponse>>
+
+    @POST("events")
+    suspend fun saveEvents(@Body event: EventCreateRequest): Response<EventResponse>
+
+    @DELETE("events/{id}")
+    suspend fun removeByIdEvent(@Path("id") id: Long): Response<Unit>
+
+    @POST("events/{id}/likes")
+    suspend fun likeByIdEvent(@Path("id") id: Long): Response<EventResponse>
+
+    @DELETE("events/{id}/likes")
+    suspend fun dislikeByIdEvent(@Path("id") id: Long): Response<EventResponse>
+
+    @POST("events/{id}/participants")
+    suspend fun joinByIdEvent(@Path("id") id: Long): Response<EventResponse>
+
+    @DELETE("events/{id}/participants")
+    suspend fun unJoinByIdEvent(@Path("id") id: Long): Response<EventResponse>
+
+    @GET("my/jobs")
+    suspend fun getMyJobs(): Response<List<Job>>
+
+    @POST("my/jobs")
+    suspend fun saveJob(@Body job: Job): Response<Job>
+
+    @DELETE("my/jobs/{id}")
+    suspend fun removeJobById(@Path("id") id: Long): Response<Unit>
+
+    @GET("{id}/jobs")
+    suspend fun getUserJobs(@Path("id") id: Long): Response<List<Job>>
 }

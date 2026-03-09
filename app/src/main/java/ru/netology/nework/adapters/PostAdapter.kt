@@ -18,8 +18,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
 import ru.netology.nework.util.FloatingValue.convertDatePublished
-import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.util.FormatNumber
+import ru.netology.nework.dto.AttachmentType
 import kotlin.coroutines.EmptyCoroutineContext
 
 interface OnInteractionListener {
@@ -122,7 +122,7 @@ class PostViewHolder(
     private fun postListeners(post: Post) {
         with(binding) {
             like.setOnClickListener {
-                like.isChecked = !like.isChecked //Инвертируем нажатие
+                like.isChecked = !like.isChecked
                 onInteractionListener.onLike(post)
             }
             share.setOnClickListener {

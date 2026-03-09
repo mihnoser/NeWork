@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import ru.netology.nework.BuildConfig
 import ru.netology.nework.auth.AppAuth
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -34,18 +35,30 @@ class ApiModule {
     fun provideOkHttp(
         logging: HttpLoggingInterceptor,
         appAuth: AppAuth
-    ):OkHttpClient = OkHttpClient.Builder()
+    ): OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .addInterceptor(logging)
         .addInterceptor { chain ->
+            val originalRequest = chain.request()
+            val requestBuilder = originalRequest.newBuilder()
+
+            requestBuilder.addHeader("Api-Key", BuildConfig.API_KEY)
+
+            android.util.Log.d("ApiModule", "URL: ${originalRequest.url}")
+            android.util.Log.d("ApiModule", "Method: ${originalRequest.method}")
+            android.util.Log.d("ApiModule", "Api-Key: ${BuildConfig.API_KEY}")
+
             appAuth.authStateFlow.value.token?.let { token ->
-                val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", token)
-                    .build()
-                return@addInterceptor chain.proceed(newRequest)
+                requestBuilder.addHeader("Authorization", token)
             }
-            chain.proceed(chain.request())
+
+            val request = requestBuilder.build()
+            chain.proceed(request)
         }
         .build()
+
 
     @Provides
     @Singleton

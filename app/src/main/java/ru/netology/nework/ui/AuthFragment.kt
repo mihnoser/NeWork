@@ -19,7 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import ru.netology.nework.R
-import ru.netology.nework.auxiliary.Companion.Companion.textArg
+import ru.netology.nework.util.Companion.Companion.textArg
 import ru.netology.nework.databinding.FragmentAuthBinding
 import ru.netology.nework.dto.MediaUpload
 import ru.netology.nework.viewmodel.AuthViewModel
@@ -101,11 +101,6 @@ class AuthFragment : Fragment() {
                 -1 -> {
                     binding.errorMessage.visibility = View.GONE
                 }
-
-                //1 -> {
-                //    binding.errorMessage.visibility = View.VISIBLE
-                //    binding.errorMessage.setText(R.string.not_pass_enter)
-                // }
 
                 else -> {
                     binding.errorMessage.visibility = View.VISIBLE

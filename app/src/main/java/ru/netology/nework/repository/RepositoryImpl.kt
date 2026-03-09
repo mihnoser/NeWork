@@ -1,6 +1,5 @@
 package ru.netology.nework.repository
 
-import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +12,10 @@ import okio.IOException
 import ru.netology.nework.api.*
 import ru.netology.nework.dao.*
 import ru.netology.nework.dto.*
+import ru.netology.nework.entity.EventsEntity
+import ru.netology.nework.entity.UserEntity
+import ru.netology.nework.entity.toEntity
+import ru.netology.nework.entity.toDto
 import ru.netology.nework.error.ApiError
 import ru.netology.nework.error.AppError
 import ru.netology.nework.error.NetworkError
@@ -21,7 +24,7 @@ import javax.inject.Inject
 
 
 class RepositoryImpl @Inject constructor(
-    private val dao: PostDaoRoom,
+    private val dao: DaoRoom,
     private val apiService: ApiService,
 ) : Repository {
 
@@ -179,6 +182,242 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getUsers() {
+        try {
+            val response = apiService.getUsers()
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+
+            val userResponseList =
+                response.body() ?: throw ApiError(response.message())
+            val usersDaoSaved = userResponseList.map { userResponse ->
+                User(
+                    id = userResponse.id,
+                    login = userResponse.login,
+                    name = userResponse.name,
+                    avatar = userResponse.avatar
+                )
+            }
+            dao.insertUsers(usersDaoSaved.toEntity())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun getUserBuId(id: Long) {
+        try {
+            val response = apiService.getUserById(id)
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            val userResponse =
+                response.body() ?: throw ApiError(response.message())
+            val userDaoSaved = User(
+                id = userResponse.id,
+                login = userResponse.login,
+                name = userResponse.name,
+                avatar = userResponse.avatar,
+            )
+            dao.insert(UserEntity.fromDto(userDaoSaved))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun getAllEvents() {
+        try {
+            val response = apiService.getAllEvents()
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.message())
+            dao.insertEvents(body.toEntity())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun saveEvents(event: EventResponse) {
+        try {
+            val eventRequest = EventCreateRequest(
+                event.id,
+                event.content,
+                event.datetime,
+                null,
+                event.type,
+                event.attachment,
+                event.link,
+                event.speakerIds
+            )
+            val response = apiService.saveEvents(eventRequest)
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            val eventResponse =
+                response.body() ?: throw ApiError(response.message())
+            dao.saveEvent(EventsEntity.fromDto(eventResponse))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun saveEventsWithAttachment(
+        event: EventResponse,
+        upload: MediaUpload,
+        attachmentType: AttachmentType
+    ) {
+        try {
+            val media = upload(upload)
+            val eventWithAttachment = event.copy(
+                attachment =
+                    Attachment(
+                        url = media.url,
+                        type = attachmentType,
+                    )
+            )
+            saveEvents(eventWithAttachment)
+        } catch (e: AppError) {
+            throw e
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun removeEventsById(id: Long) {
+        try {
+            val response = apiService.removeByIdEvent(id)
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            dao.removeByIdEvent(id)
+
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun likeByIdEvents(event: EventResponse) {
+        dao.likeByIdEvent(event.id)
+        try {
+            val response = if (event.likedByMe) {
+                apiService.dislikeByIdEvent(event.id)
+            } else {
+                apiService.likeByIdEvent(event.id)
+            }
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.message())
+            dao.insertEvents(EventsEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun joinByIdEvents(event: EventResponse) {
+        dao.joinByIdEvent(event.id)
+        try {
+            val response = if (event.participatedByMe) {
+                apiService.unJoinByIdEvent(event.id)
+            } else {
+                apiService.joinByIdEvent(event.id)
+            }
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.message())
+            dao.insertEvents(EventsEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+    override suspend fun getJobs(id: Long) {
+        try {
+            val response = apiService.getUserJobs(id)
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.message())
+            dao.insertJobs(body.toEntity(id))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun getMyJobs(id: Long) {
+        try {
+            val response = apiService.getMyJobs()
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.message())
+            dao.insertJobs(body.toEntity(id))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun saveJob(job: Job) {
+        try {
+            val response = apiService.saveJob(job)
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            val jobResponse = response.body() ?: throw ApiError(response.message())
+            dao.insertJob(JobEntity.fromDto(jobResponse))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun removeJobById(id: Long) {
+        dao.removeByIdJob(id)
+        try {
+            val response = apiService.removeJobById(id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.message())
+            }
+            dao.removeByIdJob(id)
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
 
     override suspend fun likeByIdAsync(post: Post) {
         dao.likeById(post.id)
