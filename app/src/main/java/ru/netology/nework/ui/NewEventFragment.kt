@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
@@ -27,16 +28,14 @@ import ru.netology.nework.R
 import ru.netology.nework.adapters.OnInteractionListenerUsers
 import ru.netology.nework.adapters.UsersAdapter
 import ru.netology.nework.util.AndroidUtils.hideKeyboard
-import ru.netology.nework.util.Companion.Companion.textArg
 import ru.netology.nework.util.ConstantValues.emptyEvent
-import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.util.FloatingValue.getExtensionFromUri
-import ru.netology.nework.util.FloatingValue.textNewPost
 import ru.netology.nework.databinding.FragmentNewEventBinding
 import ru.netology.nework.dto.Attachment
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.EventType
 import ru.netology.nework.dto.User
+import ru.netology.nework.util.Factory.Companion.textArg
 import ru.netology.nework.viewmodel.EventViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 import java.io.File
@@ -56,6 +55,7 @@ class NewEventFragment : Fragment() {
     private var attachRes: Attachment? = null
     private var speakersIds:MutableList<Long> = mutableListOf()
     private var typeEvent:EventType = EventType.ONLINE
+    private var draftText: String? = null
     private var adapter = UsersAdapter(object : OnInteractionListenerUsers {
         override fun onTap(user: User) {
             speakersIds.add(user.id)
@@ -70,6 +70,8 @@ class NewEventFragment : Fragment() {
     ): View {
 
         fragmentBinding = binding
+
+        draftText = savedInstanceState?.getString("draft_text")
 
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest { list ->
@@ -97,7 +99,7 @@ class NewEventFragment : Fragment() {
             }
 
             if (edit.text.isNullOrBlank()) {
-                edit.setText(textNewPost)
+                draftText?.let { edit.setText(it) }
             }
 
             edit.requestFocus()
@@ -162,6 +164,7 @@ class NewEventFragment : Fragment() {
                                     speakersIds
                                 )
                                 viewModel.save()
+                                draftText = null
                                 hideKeyboard(requireView())
                             }
                             true
@@ -173,12 +176,23 @@ class NewEventFragment : Fragment() {
             binding.listUsers.adapter = adapter
             clickListeners()
 
+            viewModel.saveError.observe(viewLifecycleOwner) { errorMessage ->
+                errorMessage?.let {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    viewModel.clearSaveError()
+                }
+            }
+
             return root
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("draft_text", binding.edit.text.toString())
+    }
+
     override fun onStart() {
-        currentFragment = javaClass.simpleName
         super.onStart()
     }
 
@@ -318,7 +332,7 @@ class NewEventFragment : Fragment() {
 
             fabCancel.setOnClickListener {
                 if (viewModel.getEditedId() == 0L) {
-                    textNewPost = edit.text.toString()
+                    draftText = edit.text.toString()
                 } else {
                     edit.text?.clear()
                     viewModel.save()
@@ -331,6 +345,9 @@ class NewEventFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        if (viewModel.getEditedId() == 0L && binding.edit.text.toString().isNotBlank()) {
+            draftText = binding.edit.text.toString()
+        }
         fragmentBinding = null
         super.onDestroyView()
     }

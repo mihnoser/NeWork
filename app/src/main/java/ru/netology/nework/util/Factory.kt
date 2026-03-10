@@ -9,7 +9,7 @@ import ru.netology.nework.util.ConstantValues.POST_MENTIONS_COUNT
 import ru.netology.nework.util.ConstantValues.USER_ID
 
 
-class Companion {
+class Factory {
 
     companion object {
         var Bundle.textArg: String?

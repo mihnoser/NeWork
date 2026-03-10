@@ -7,8 +7,19 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
-android {
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { stream ->
+        localProperties.load(stream)
+    }
+}
 
+def apiKey = "\"${localProperties.getProperty('API_KEY', 'default_api_key')}\""
+def baseUrl = "\"${localProperties.getProperty('BASE_URL', 'https://default.url')}\""
+def mapsApiKey = "\"${localProperties.getProperty('MAPS_API_KEY', 'default_maps_key')}\""
+
+android {
     namespace = "ru.netology.nework"
     compileSdk = 34
 
@@ -18,6 +29,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField "String", "API_KEY", apiKey
+        buildConfigField "String", "BASE_URL", baseUrl
+        buildConfigField "String", "MAPS_API_KEY", mapsApiKey
+        manifestPlaceholders = [mapsApiKey: mapsApiKey]
     }
 
     buildFeatures {
@@ -30,18 +46,9 @@ android {
         release {
             minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "BASE_URL", BASE_URL
-            buildConfigField "String", "API_KEY", API_KEY
-            buildConfigField "String", "MAPS_API_KEY", MAPS_API_KEY
-            manifestPlaceholders = [mapsApiKey: MAPS_API_KEY]
         }
         debug {
-            buildConfigField "String", "BASE_URL", BASE_URL
-            buildConfigField "String", "API_KEY", API_KEY
-            buildConfigField "String", "MAPS_API_KEY", MAPS_API_KEY
-            manifestPlaceholders = [mapsApiKey: MAPS_API_KEY]
         }
-
     }
 
     compileOptions {

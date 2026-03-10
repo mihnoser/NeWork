@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
-import ru.netology.nework.util.Companion.Companion.userId
 import android.os.Bundle
 import android.view.*
 import android.widget.MediaController
@@ -21,13 +20,13 @@ import ru.netology.nework.R
 import ru.netology.nework.adapters.EventAdapter
 import ru.netology.nework.adapters.OnInteractionListenerEvent
 import ru.netology.nework.auth.AppAuth
-import ru.netology.nework.util.Companion.Companion.eventId
-import ru.netology.nework.util.Companion.Companion.eventRequestType
-import ru.netology.nework.util.Companion.Companion.textArg
-import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.databinding.FragmentEventsBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.EventResponse
+import ru.netology.nework.util.Factory.Companion.eventId
+import ru.netology.nework.util.Factory.Companion.eventRequestType
+import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.Factory.Companion.userId
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.EventViewModel
 import javax.inject.Inject
@@ -337,6 +336,13 @@ class EventsFragment : Fragment() {
             binding.swipe.isRefreshing = false
         }
 
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                viewModel.clearError()
+            }
+        }
+
         return binding.root
     }
 
@@ -346,7 +352,6 @@ class EventsFragment : Fragment() {
     }
 
     override fun onResume() {
-        currentFragment = javaClass.simpleName
         super.onResume()
     }
 }

@@ -20,16 +20,15 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nework.R
 import ru.netology.nework.adapters.*
 import ru.netology.nework.auth.AppAuth
-import ru.netology.nework.util.Companion.Companion.eventId
-import ru.netology.nework.util.Companion.Companion.eventRequestType
-import ru.netology.nework.util.Companion.Companion.linkArg
-import ru.netology.nework.util.Companion.Companion.mentionsCountArg
-import ru.netology.nework.util.Companion.Companion.textArg
-import ru.netology.nework.util.Companion.Companion.userId
 import ru.netology.nework.util.ConstantValues.emptyUser
-import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.databinding.FragmentProfileBinding
 import ru.netology.nework.dto.*
+import ru.netology.nework.util.Factory.Companion.eventId
+import ru.netology.nework.util.Factory.Companion.eventRequestType
+import ru.netology.nework.util.Factory.Companion.linkArg
+import ru.netology.nework.util.Factory.Companion.mentionsCountArg
+import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.Factory.Companion.userId
 import ru.netology.nework.viewmodel.*
 import javax.inject.Inject
 
@@ -531,7 +530,6 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onResume() {
-        currentFragment = javaClass.simpleName
         super.onResume()
     }
 }

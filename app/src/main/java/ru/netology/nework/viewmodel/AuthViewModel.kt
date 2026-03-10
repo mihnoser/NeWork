@@ -54,7 +54,7 @@ class AuthViewModel @Inject constructor(
         _dataState.value = -1
     }
 
-    suspend fun login(login: String, pass: String) {
+    fun login(login: String, pass: String) {
         viewModelScope.launch {
             val token: Token
             try {
@@ -81,7 +81,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    suspend fun registerWithPhoto(login: String, pass: String, name: String, upload: MediaUpload?) {
+    fun registerWithPhoto(login: String, pass: String, name: String, upload: MediaUpload?) {
         viewModelScope.launch {
             val token: Token
             try {

@@ -3,4 +3,3 @@ local.properties
 *.iml
 build/
 app/build/
-gradle.properties

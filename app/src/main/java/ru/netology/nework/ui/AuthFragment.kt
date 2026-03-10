@@ -19,9 +19,9 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import ru.netology.nework.R
-import ru.netology.nework.util.Companion.Companion.textArg
 import ru.netology.nework.databinding.FragmentAuthBinding
 import ru.netology.nework.dto.MediaUpload
+import ru.netology.nework.util.Factory.Companion.textArg
 import ru.netology.nework.viewmodel.AuthViewModel
 import kotlin.coroutines.EmptyCoroutineContext
 

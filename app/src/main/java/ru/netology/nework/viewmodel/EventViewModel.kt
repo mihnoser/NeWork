@@ -50,6 +50,12 @@ class EventViewModel @Inject constructor(
     val media: LiveData<MediaModel>
         get() = _media
 
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
+    private val _saveError = MutableLiveData<String?>()
+    val saveError: LiveData<String?> = _saveError
+
     fun changeMedia(uri: Uri?, file: File?, attachmentType: AttachmentType?) {
         _media.value = MediaModel(uri, file, attachmentType)
     }
@@ -62,7 +68,8 @@ class EventViewModel @Inject constructor(
     fun loadEvents() = viewModelScope.launch {
         try {
             repository.getAllEvents()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            _error.value = "Ошибка загрузки: ${e.message}"
         }
 
         repository.dataEvents.collectLatest {
@@ -73,14 +80,16 @@ class EventViewModel @Inject constructor(
     fun likeById(eventResponse: EventResponse) = viewModelScope.launch {
         try {
             repository.likeByIdEvents(eventResponse)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            _error.value = "Ошибка: не удалось поставить лайк"
         }
     }
 
     fun removeById(id: Long) = viewModelScope.launch {
         try {
             repository.removeEventsById(id)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            _error.value = "Ошибка: не удалось удалить событие"
         }
     }
 
@@ -109,7 +118,8 @@ class EventViewModel @Inject constructor(
     fun joinById(eventResponse: EventResponse) = viewModelScope.launch {
         try {
             repository.joinByIdEvents(eventResponse)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            _error.value = "Ошибка: не удалось изменить участие"
         }
     }
 
@@ -128,11 +138,22 @@ class EventViewModel @Inject constructor(
                             )
                         }
                     }
-                } catch (_: Exception) {
+                    _saveError.value = null
+                } catch (e: Exception) {
+                    _saveError.value = "Ошибка сохранения: ${e.message}"
                 }
             }
         }
         edited.value = emptyEvent
         _media.value = noPhoto
     }
+
+    fun clearError() {
+        _error.value = null
+    }
+
+    fun clearSaveError() {
+        _saveError.value = null
+    }
+
 }

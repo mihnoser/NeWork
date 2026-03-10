@@ -23,7 +23,6 @@ out/
 
 ### Android Studio ###
 local.properties
-gradle.properties
 maps.properties
 captures/
 .externalNativeBuild

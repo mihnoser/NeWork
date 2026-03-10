@@ -2,7 +2,6 @@ package ru.netology.nework.ui
 
 import android.app.AlertDialog
 import ru.netology.nework.adapters.OnInteractionListenerUsers
-import ru.netology.nework.util.Companion.Companion.userId
 import ru.netology.nework.dto.User
 import android.os.Bundle
 import android.view.*
@@ -17,9 +16,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nework.adapters.UsersAdapter
 import ru.netology.nework.auth.AppAuth
-import ru.netology.nework.util.Companion.Companion.textArg
-import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.databinding.FragmentUsersBinding
+import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.Factory.Companion.userId
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 import javax.inject.Inject
@@ -136,7 +135,6 @@ class UsersFragment : Fragment() {
     }
 
     override fun onStart() {
-        currentFragment = javaClass.simpleName
         super.onStart()
     }
 }

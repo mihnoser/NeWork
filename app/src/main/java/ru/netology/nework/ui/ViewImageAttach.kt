@@ -9,8 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
-import ru.netology.nework.util.Companion.Companion.textArg
 import ru.netology.nework.databinding.FragmentAttachmentImageViewBinding
+import ru.netology.nework.util.Factory.Companion.textArg
 
 @AndroidEntryPoint
 class ViewImageAttach : Fragment() {

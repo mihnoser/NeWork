@@ -2,7 +2,6 @@ package ru.netology.nework.ui
 
 import android.app.AlertDialog
 import android.media.MediaPlayer
-import ru.netology.nework.util.Companion.Companion.userId
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -24,14 +23,14 @@ import ru.netology.nework.R
 import ru.netology.nework.adapters.OnInteractionListener
 import ru.netology.nework.adapters.PostAdapter
 import ru.netology.nework.auth.AppAuth
-import ru.netology.nework.util.Companion.Companion.linkArg
-import ru.netology.nework.util.Companion.Companion.mentionsCountArg
-import ru.netology.nework.util.Companion.Companion.textArg
-import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.databinding.FragmentFeedBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.Post
 import ru.netology.nework.model.FeedModelState
+import ru.netology.nework.util.Factory.Companion.linkArg
+import ru.netology.nework.util.Factory.Companion.mentionsCountArg
+import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.Factory.Companion.userId
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.PostViewModel
 import javax.inject.Inject
@@ -345,7 +344,6 @@ class FeedFragment : Fragment() {
     }
 
     override fun onResume() {
-        currentFragment = javaClass.simpleName
         super.onResume()
     }
 }

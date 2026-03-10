@@ -27,16 +27,14 @@ import ru.netology.nework.R
 import ru.netology.nework.adapters.OnInteractionListenerUsers
 import ru.netology.nework.adapters.UsersAdapter
 import ru.netology.nework.util.AndroidUtils.hideKeyboard
-import ru.netology.nework.util.Companion.Companion.linkArg
-import ru.netology.nework.util.Companion.Companion.mentionsCountArg
-import ru.netology.nework.util.Companion.Companion.textArg
-import ru.netology.nework.util.FloatingValue.currentFragment
 import ru.netology.nework.util.FloatingValue.getExtensionFromUri
-import ru.netology.nework.util.FloatingValue.textNewPost
 import ru.netology.nework.databinding.FragmentNewPostBinding
 import ru.netology.nework.dto.Attachment
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.User
+import ru.netology.nework.util.Factory.Companion.linkArg
+import ru.netology.nework.util.Factory.Companion.mentionsCountArg
+import ru.netology.nework.util.Factory.Companion.textArg
 import ru.netology.nework.viewmodel.PostViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 import java.io.File
@@ -48,7 +46,7 @@ class NewPostFragment : Fragment() {
     private val binding by lazy { FragmentNewPostBinding.inflate(layoutInflater) }
     private val viewModel: PostViewModel by activityViewModels()
     private val userViewModel: UsersViewModel by viewModels()
-
+    private var draftText: String? = null
     private var fragmentBinding: FragmentNewPostBinding? = null
     private var type: AttachmentType? = null
     private var attachRes: Attachment? = null
@@ -68,6 +66,8 @@ class NewPostFragment : Fragment() {
 
         fragmentBinding = binding
 
+        draftText = savedInstanceState?.getString("draft_text")
+
         with(binding) {
 
             arguments?.textArg?.let {
@@ -83,7 +83,7 @@ class NewPostFragment : Fragment() {
             }
 
             if (edit.text.isNullOrBlank()) {
-                edit.setText(textNewPost)
+                draftText?.let { edit.setText(it) }
             }
 
             edit.requestFocus()
@@ -138,6 +138,7 @@ class NewPostFragment : Fragment() {
                                     mentionsIds
                                 )
                                 viewModel.save()
+                                draftText = null
                                 hideKeyboard(requireView())
                             }
                             true
@@ -153,8 +154,12 @@ class NewPostFragment : Fragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("draft_text", binding.edit.text.toString())
+    }
+
     override fun onStart() {
-        currentFragment = javaClass.simpleName
         super.onStart()
     }
 
@@ -276,7 +281,7 @@ class NewPostFragment : Fragment() {
 
             fabCancel.setOnClickListener {
                 if (viewModel.getEditedId() == 0L) {
-                    textNewPost = edit.text.toString()
+                    draftText = edit.text.toString()
                 } else {
                     edit.text?.clear()
                     viewModel.save()
@@ -289,6 +294,9 @@ class NewPostFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        if (viewModel.getEditedId() == 0L && binding.edit.text.toString().isNotBlank()) {
+            draftText = binding.edit.text.toString()
+        }
         fragmentBinding = null
         super.onDestroyView()
     }
