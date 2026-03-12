@@ -32,13 +32,14 @@ import ru.netology.nework.databinding.FragmentNewPostBinding
 import ru.netology.nework.dto.Attachment
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.User
-import ru.netology.nework.util.Factory.Companion.linkArg
-import ru.netology.nework.util.Factory.Companion.mentionsCountArg
-import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.BundleArguments.Companion.linkArg
+import ru.netology.nework.util.BundleArguments.Companion.mentionsCountArg
+import ru.netology.nework.util.BundleArguments.Companion.textArg
 import ru.netology.nework.viewmodel.PostViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 import java.io.File
 import java.io.FileOutputStream
+import androidx.activity.addCallback
 
 @AndroidEntryPoint
 class NewPostFragment : Fragment() {
@@ -123,6 +124,13 @@ class NewPostFragment : Fragment() {
                 }
             }
 
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                if (viewModel.getEditedId() == 0L && binding.edit.text.toString().isNotBlank()) {
+                    draftText = binding.edit.text.toString()
+                }
+                findNavController().navigateUp()
+            }
+
             requireActivity().addMenuProvider(object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_new_post, menu)
@@ -152,15 +160,9 @@ class NewPostFragment : Fragment() {
 
             return root
         }
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("draft_text", binding.edit.text.toString())
-    }
 
-    override fun onStart() {
-        super.onStart()
+
     }
 
     @SuppressLint("IntentReset")

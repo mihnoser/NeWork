@@ -46,6 +46,8 @@
         android:id="@+id/main_nav_view"
         android:layout_width="0dp"
         android:layout_height="@dimen/bottom_menu_height"
+        app:itemIconTint="@color/bottom_nav_colors"
+        app:itemTextColor="@color/bottom_nav_colors"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentAttachmentImageViewBinding
-import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.BundleArguments.Companion.textArg
 
 @AndroidEntryPoint
 class ViewImageAttach : Fragment() {

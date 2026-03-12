@@ -27,10 +27,10 @@ import ru.netology.nework.databinding.FragmentFeedBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.Post
 import ru.netology.nework.model.FeedModelState
-import ru.netology.nework.util.Factory.Companion.linkArg
-import ru.netology.nework.util.Factory.Companion.mentionsCountArg
-import ru.netology.nework.util.Factory.Companion.textArg
-import ru.netology.nework.util.Factory.Companion.userId
+import ru.netology.nework.util.BundleArguments.Companion.linkArg
+import ru.netology.nework.util.BundleArguments.Companion.mentionsCountArg
+import ru.netology.nework.util.BundleArguments.Companion.textArg
+import ru.netology.nework.util.BundleArguments.Companion.userId
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.PostViewModel
 import javax.inject.Inject
@@ -341,9 +341,5 @@ class FeedFragment : Fragment() {
     override fun onDestroyView() {
         mediaPlayer.release()
         super.onDestroyView()
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 }

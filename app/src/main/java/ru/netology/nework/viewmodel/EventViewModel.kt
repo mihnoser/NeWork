@@ -125,7 +125,6 @@ class EventViewModel @Inject constructor(
 
     fun save() {
         edited.value?.let { savingEvents ->
-            _eventCreated.value = Unit
             viewModelScope.launch {
                 try {
                     when (_media.value) {
@@ -138,14 +137,21 @@ class EventViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    _eventCreated.value = Unit
                     _saveError.value = null
+                    edited.value = emptyEvent
+                    _media.value = noPhoto
                 } catch (e: Exception) {
-                    _saveError.value = "Ошибка сохранения: ${e.message}"
+                    e.printStackTrace()
+                    val errorMessage = when (e) {
+                        is java.io.IOException -> "Ошибка сети"
+                        else -> e.message ?: "Неизвестная ошибка"
+                    }
+                    _saveError.value = "Ошибка сохранения: $errorMessage"
                 }
             }
         }
-        edited.value = emptyEvent
-        _media.value = noPhoto
     }
 
     fun clearError() {

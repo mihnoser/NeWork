@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nework.adapters.UsersAdapter
 import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.databinding.FragmentUsersBinding
-import ru.netology.nework.util.Factory.Companion.textArg
-import ru.netology.nework.util.Factory.Companion.userId
+import ru.netology.nework.util.BundleArguments.Companion.textArg
+import ru.netology.nework.util.BundleArguments.Companion.userId
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 import javax.inject.Inject
@@ -132,9 +132,5 @@ class UsersFragment : Fragment() {
             }
         }
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 }

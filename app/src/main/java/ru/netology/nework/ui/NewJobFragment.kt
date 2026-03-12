@@ -3,6 +3,7 @@ package ru.netology.nework.ui
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -63,6 +64,24 @@ class NewJobFragment : Fragment() {
                 draftStartDate?.let { dateStartWorkingInput.setText(it) }
                 draftEndDate?.let { dateEndWorkingInput.setText(it) }
                 draftLink?.let { inputLink.setText(it) }
+            }
+
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                if (viewModel.getEditedId() == 0L) {
+                    if (binding.jobOrganizationInput.text.toString().isNotBlank() ||
+                        binding.jobPositionInput.text.toString().isNotBlank() ||
+                        binding.dateStartWorkingInput.text.toString().isNotBlank() ||
+                        binding.dateEndWorkingInput.text.toString().isNotBlank() ||
+                        binding.inputLink.text.toString().isNotBlank()) {
+
+                        draftOrganization = binding.jobOrganizationInput.text.toString()
+                        draftPosition = binding.jobPositionInput.text.toString()
+                        draftStartDate = binding.dateStartWorkingInput.text.toString()
+                        draftEndDate = binding.dateEndWorkingInput.text.toString()
+                        draftLink = binding.inputLink.text.toString()
+                    }
+                }
+                findNavController().navigateUp()
             }
 
             requireActivity().addMenuProvider(object : MenuProvider {
@@ -149,21 +168,6 @@ class NewJobFragment : Fragment() {
         draftStartDate = null
         draftEndDate = null
         draftLink = null
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (viewModel.getEditedId() == 0L) {
-            outState.putString("draft_organization", binding.jobOrganizationInput.text.toString())
-            outState.putString("draft_position", binding.jobPositionInput.text.toString())
-            outState.putString("draft_start_date", binding.dateStartWorkingInput.text.toString())
-            outState.putString("draft_end_date", binding.dateEndWorkingInput.text.toString())
-            outState.putString("draft_link", binding.inputLink.text.toString())
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onDestroyView() {

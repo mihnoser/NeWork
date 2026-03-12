@@ -23,10 +23,10 @@ import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.databinding.FragmentEventsBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.EventResponse
-import ru.netology.nework.util.Factory.Companion.eventId
-import ru.netology.nework.util.Factory.Companion.eventRequestType
-import ru.netology.nework.util.Factory.Companion.textArg
-import ru.netology.nework.util.Factory.Companion.userId
+import ru.netology.nework.util.BundleArguments.Companion.eventId
+import ru.netology.nework.util.BundleArguments.Companion.eventRequestType
+import ru.netology.nework.util.BundleArguments.Companion.textArg
+import ru.netology.nework.util.BundleArguments.Companion.userId
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.EventViewModel
 import javax.inject.Inject
@@ -349,9 +349,5 @@ class EventsFragment : Fragment() {
     override fun onDestroyView() {
         mediaPlayer.release()
         super.onDestroyView()
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 }

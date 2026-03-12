@@ -1,5 +1,7 @@
 package ru.netology.nework.adapters
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -36,6 +38,7 @@ interface OnInteractionListener {
 class PostAdapter(
     private val onInteractionListener: OnInteractionListener
 ) : ListAdapter<Post,PostViewHolder>(PostDiffCallback()) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding =
             FragmentCardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -46,6 +49,22 @@ class PostAdapter(
         val post = getItem(position)
         holder.renderingPostStructure(post)
     }
+
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int, payloads: List<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            val post = getItem(position)
+            holder.renderingPostStructure(post)
+
+            payloads.forEach {
+                (it as? Payload)?.let { payload ->
+                    holder.bind(payload)
+                }
+            }
+        }
+    }
+
     override fun onViewRecycled(holder: PostViewHolder) {
         super.onViewRecycled(holder)
         holder.binding.videoAttachment.stopPlayback()
@@ -61,6 +80,12 @@ class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem == newItem
     }
+
+    override fun getChangePayload(oldItem: Post, newItem: Post): Any =
+        Payload(
+            likedByMe = newItem.likedByMe.takeIf { it !=oldItem.likedByMe },
+            content = newItem.content.takeIf { it !=oldItem.content },
+        )
 }
 
 class PostViewHolder(
@@ -171,4 +196,25 @@ class PostViewHolder(
             }
         }
     }
+
+    fun bind(payload: Payload) {
+        payload.likedByMe?.let {
+            ObjectAnimator.ofPropertyValuesHolder(
+                binding.like,
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0F, 1.3F, 1.0F),
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0F, 1.3F, 1.0F)
+                ).apply {
+                duration = 300
+                start()
+            }
+        }
+        payload.content?.let {
+            binding.content.text = it
+        }
+    }
 }
+
+data class Payload(
+    val likedByMe: Boolean? = null,
+    val content: String? = null,
+)

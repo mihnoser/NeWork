@@ -105,7 +105,7 @@
         android:layout_marginEnd="@dimen/usual_margin"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/red_500"
+        android:textColor="@color/purple_700"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

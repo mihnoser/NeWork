@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
@@ -35,13 +36,15 @@ import ru.netology.nework.dto.Attachment
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.EventType
 import ru.netology.nework.dto.User
-import ru.netology.nework.util.Factory.Companion.textArg
+import ru.netology.nework.util.BundleArguments.Companion.textArg
 import ru.netology.nework.viewmodel.EventViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 @AndroidEntryPoint
 class NewEventFragment : Fragment() {
@@ -139,22 +142,53 @@ class NewEventFragment : Fragment() {
                 }
             }
 
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                if (viewModel.getEditedId() == 0L && binding.edit.text.toString().isNotBlank()) {
+                    draftText = binding.edit.text.toString()
+                }
+                findNavController().navigateUp()
+            }
+
             requireActivity().addMenuProvider(object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_new_post, menu)
                 }
-                private fun formatDate(inputDate: String): String {
-                    val sourceFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-                    val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    return targetFormat.format(sourceFormat.parse(inputDate)!!)
+                private fun formatDateTime(dateStr: String, timeStr: String): String {
+
+                    val sourceDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                    val sourceTime = SimpleDateFormat("HH:mm", Locale.getDefault())
+                    val targetFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                    targetFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+                    val date = sourceDate.parse(dateStr)
+                    val time = sourceTime.parse(timeStr)
+
+                    val calendar = Calendar.getInstance()
+                    calendar.time = date
+
+                    val timeCalendar = Calendar.getInstance()
+                    timeCalendar.time = time
+
+                    calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY))
+                    calendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE))
+                    calendar.set(Calendar.SECOND, 0)
+                    calendar.set(Calendar.MILLISECOND, 0)
+
+                    return targetFormat.format(calendar.time)
                 }
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
                     when (menuItem.itemId) {
                         R.id.save -> {
                             fragmentBinding?.let {
-                                val formattedDate = formatDate(it.dateEventInput.text.toString())
-                                val formattedDateTime = "$formattedDate ${it.timeEventInput.text.toString()}"
+                                if (it.dateEventInput.text.isNullOrBlank() || it.timeEventInput.text.isNullOrBlank()) {
+                                    Toast.makeText(requireContext(), "Введите дату и время", Toast.LENGTH_SHORT).show()
+                                    return@let true
+                                }
 
+                                val formattedDateTime = formatDateTime(
+                                    it.dateEventInput.text.toString(),
+                                    it.timeEventInput.text.toString()
+                                )
 
                                 viewModel.changeContent(
                                     it.edit.text.toString(),
@@ -171,7 +205,6 @@ class NewEventFragment : Fragment() {
                         }
                         else -> false
                     }
-
             }, viewLifecycleOwner)
             binding.listUsers.adapter = adapter
             clickListeners()
@@ -185,15 +218,6 @@ class NewEventFragment : Fragment() {
 
             return root
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("draft_text", binding.edit.text.toString())
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     @SuppressLint("IntentReset")

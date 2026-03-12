@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.viewmodel.AuthViewModel
@@ -39,22 +37,5 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
             }
             Toast.makeText(this@AppActivity, "Google Api Unavailable", Toast.LENGTH_LONG).show()
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        val navController = findNavController(R.id.nav_host_fragment)
-        val currentDestination = navController.currentDestination
-
-        when (currentDestination?.id) {
-            R.id.newPostFragment,
-            R.id.newEventFragment,
-            R.id.newJobFragment -> {
-                findViewById<FloatingActionButton>(R.id.fab_cancel)?.callOnClick()
-                return
-            }
-        }
-
-        super.onBackPressed()
     }
 }

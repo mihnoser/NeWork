@@ -9,7 +9,7 @@ import ru.netology.nework.util.ConstantValues.POST_MENTIONS_COUNT
 import ru.netology.nework.util.ConstantValues.USER_ID
 
 
-class Factory {
+class BundleArguments {
 
     companion object {
         var Bundle.textArg: String?
@@ -27,7 +27,6 @@ class Factory {
         var Bundle.eventRequestType: String?
             set(value) = putString(EVENT_REQUEST_TYPE, value)
             get() = getString(EVENT_REQUEST_TYPE)
-
         var Bundle.userId: Long
             set(value) = putLong(USER_ID, value)
             get() = getLong(USER_ID)

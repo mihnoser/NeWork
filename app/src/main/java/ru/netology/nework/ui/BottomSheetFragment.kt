@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nework.adapters.UsersAdapter
 import ru.netology.nework.dto.User
 import ru.netology.nework.databinding.FragmentBottomSheetBinding
-import ru.netology.nework.util.Factory.Companion.eventId
-import ru.netology.nework.util.Factory.Companion.eventRequestType
-import ru.netology.nework.util.Factory.Companion.userId
+import ru.netology.nework.util.BundleArguments.Companion.eventId
+import ru.netology.nework.util.BundleArguments.Companion.eventRequestType
+import ru.netology.nework.util.BundleArguments.Companion.userId
 import ru.netology.nework.viewmodel.EventViewModel
 import ru.netology.nework.viewmodel.UsersViewModel
 
